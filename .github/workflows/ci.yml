@@ -1,71 +1,49 @@
 name: CI
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-      - next
-      - alpha
-
+  workflow_dispatch: {}
 jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
     if: github.repository == 'openai/openai-node'
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Bootstrap
-        run: ./scripts/bootstrap
-
-      - name: Check types
-        run: ./scripts/lint
-
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Bootstrap
+      run: ./scripts/bootstrap
+    - name: Check types
+      run: ./scripts/lint
   build:
     name: build
     runs-on: ubuntu-latest
     if: github.repository == 'openai/openai-node'
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Bootstrap
-        run: ./scripts/bootstrap
-
-      - name: Check build
-        run: ./scripts/build
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Bootstrap
+      run: ./scripts/bootstrap
+    - name: Check build
+      run: ./scripts/build
   test:
     name: test
     runs-on: ubuntu-latest
     if: github.repository == 'openai/openai-node'
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Bootstrap
-        run: ./scripts/bootstrap
-
-      - name: Run tests
-        run: ./scripts/test
-
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Bootstrap
+      run: ./scripts/bootstrap
+    - name: Run tests
+      run: ./scripts/test
   ecosystem_tests:
     name: ecosystem tests (v${{ matrix.node-version }})
     runs-on: ubuntu-latest
@@ -74,27 +52,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['18', '20']
-
+        node-version:
+        - '18'
+        - '20'
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.39.0
+    - uses: oven-sh/setup-bun@v2
+    - name: Bootstrap
+      run: ./scripts/bootstrap
+    - name: Run ecosystem tests
+      run: 'yarn tsn ecosystem-tests/cli.ts --live --verbose --parallel --jobs=4 --retry=3
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '${{ matrix.node-version }}'
-
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.39.0
-
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Bootstrap
-        run: ./scripts/bootstrap
-
-      - name: Run ecosystem tests
-        run: |
-          yarn tsn ecosystem-tests/cli.ts --live --verbose --parallel --jobs=4 --retry=3
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        '
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
