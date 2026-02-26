@@ -1,49 +1,36 @@
 name: CI
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-
+  workflow_dispatch: {}
 jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
     if: github.repository == 'openai/openai-node'
-
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Install dependencies
+      run: 'yarn install
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+        '
+    - name: Check types
+      run: 'yarn build
 
-      - name: Install dependencies
-        run: |
-          yarn install
-
-      - name: Check types
-        run: |
-          yarn build
+        '
   test:
     name: test
     runs-on: ubuntu-latest
     if: github.repository == 'openai/openai-node'
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Bootstrap
-        run: ./scripts/bootstrap
-
-      - name: Run tests
-        run: ./scripts/test
-
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Bootstrap
+      run: ./scripts/bootstrap
+    - name: Run tests
+      run: ./scripts/test
