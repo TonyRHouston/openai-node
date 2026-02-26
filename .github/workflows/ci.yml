@@ -5,8 +5,7 @@ jobs:
   lint:
     timeout-minutes: 10
     name: lint
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-typescript' && 'depot-ubuntu-24.04'
-      || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up Node
@@ -20,8 +19,7 @@ jobs:
   build:
     timeout-minutes: 5
     name: build
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-typescript' && 'depot-ubuntu-24.04'
-      || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
@@ -51,8 +49,7 @@ jobs:
   test:
     timeout-minutes: 10
     name: test
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-typescript' && 'depot-ubuntu-24.04'
-      || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up Node
@@ -66,8 +63,7 @@ jobs:
   examples:
     timeout-minutes: 10
     name: examples
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-typescript' && 'depot-ubuntu-24.04'
-      || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     if: github.repository == 'openai/openai-node'
     steps:
     - uses: actions/checkout@v4
